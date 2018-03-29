@@ -23,10 +23,6 @@ const {width, height} = Dimensions.get('window');
 
 class AudioControls extends Component {
 
-  state = {
-    modalVisible: false,
-  };
-
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
   }
@@ -78,6 +74,7 @@ class AudioControls extends Component {
     super(props);
 
     this.state = {
+      modalVisible: false,
       duration: 0,
       currentTime: 0,
       currentAudio: {},
@@ -142,6 +139,19 @@ class AudioControls extends Component {
     </TouchableOpacity >);
   }
 
+  renderPlayerTrackIcon() {
+    const {isPlaying} = this.state;
+    if (isPlaying) {
+      return (<TouchableOpacity onPress={() => AudioController.pause()}>
+        <Image source={require('../../../src/images/icon_play_at.png')}/>
+      </TouchableOpacity >);
+    }
+
+    return (<TouchableOpacity onPress={() => AudioController.play()}>
+      <Image source={require('../../../src/images/icon_play.png')}/>
+    </TouchableOpacity >);
+  }
+
   renderPlayerIcon() {
     const {isPlaying} = this.state;
     if (isPlaying) {
@@ -151,7 +161,7 @@ class AudioControls extends Component {
               tintColor: this.props.activeButtonColor || this.props.activeColor
             }
           ]}/>
-      </TouchableOpacity >);
+      </TouchableOpacity>);
     }
 
     return (<TouchableOpacity onPress={() => AudioController.play()}>
@@ -160,41 +170,25 @@ class AudioControls extends Component {
             tintColor: this.props.activeButtonColor || this.props.activeColor
           }
         ]}/>
-    </TouchableOpacity >);
+    </TouchableOpacity>);
   }
 
   renderNextIcon() {
     if (AudioController.hasNext()) {
       return (<TouchableOpacity onPress={() => AudioController.playNext()}>
-        <Image source={images.iconNext} style={[
-            styles.controlButton, {
-              tintColor: this.props.activeButtonColor || this.props.activeColor
-            }
-          ]}/>
+          <Image source={require('../../../src/images/icon_next_at.png')} style={styles.controlExtraButton}/>
       </TouchableOpacity>);
     }
-    return (<Image source={images.iconNext} style={[
-        styles.controlButton, {
-          tintColor: this.props.inactiveButtonColor || this.props.inactiveColor
-        }
-      ]}/>);
+    return (  <Image source={require('../../../src/images/icon_next_at.png')} style={styles.controlExtraButton}/>);
   }
 
   renderPreviousIcon() {
     if (AudioController.hasPrevious()) {
       return (<TouchableOpacity onPress={() => AudioController.playPrevious()}>
-        <Image source={images.iconPrevious} style={[
-            styles.controlButton, {
-              tintColor: this.props.activeButtonColor || this.props.activeColor
-            }
-          ]}/>
+          <Image source={require('../../../src/images/icon_previous_at.png')} style={styles.controlExtraButton}/>
       </TouchableOpacity>);
     }
-    return (<Image source={images.iconPrevious} style={[
-        styles.controlButton, {
-          tintColor: this.props.inactiveButtonColor || this.props.inactiveColor
-        }
-      ]}/>);
+    return (<Image source={require('../../../src/images/icon_previous_at.png')} style={styles.controlExtraButton}/>);
   }
 
   renderSkipbackwardIcon() {
@@ -223,6 +217,47 @@ class AudioControls extends Component {
           }
         ]}/>
     </TouchableOpacity>);
+  }
+
+  renderShuffleIcon() {
+    return (<TouchableOpacity onPress={() => AudioController.playNext()}>
+      <Image source={require('../../../src/images/icon_shuffle.png')} style={styles.controlExtraButton}/>
+    </TouchableOpacity>)
+  }
+
+  renderRepeatIcon() {
+    return (<TouchableOpacity onPress={() => AudioController.playNext()}>
+      <Image source={require('../../../src/images/icon_repeat.png')} style={styles.controlExtraButton}/>
+    </TouchableOpacity>)
+  }
+
+  renderTrack() {
+    const {currentTime, duration, currentAudio} = this.state;
+    return (<View>
+      <View style={styles.center}>
+        <View style={styles.playbackContainer}>
+          <Slider value={currentTime} maximumValue={duration}
+            style={styles.playbackBar}
+            minimumTrackTintColor={this.props.sliderMinimumTrackTintColor || this.props.activeColor}
+             maximumTrackTintColor={this.props.sliderMaximumTrackTintColor || this.props.inactiveColor}
+             thumbTintColor={this.props.sliderThumbTintColor || this.props.activeColor}
+             onSlidingComplete={seconds => {
+              AudioController.seek(seconds);
+              if (seconds < duration)
+                AudioController.play();
+              }} onValueChange={() => AudioController.clearCurrentTimeListener()}/>
+        </View>
+        <View style={styles.buttonsContainer}>
+          {this.renderShuffleIcon()}
+          {this.renderSkipbackwardIcon()}
+          {this.renderPreviousIcon()}
+          {this.renderPlayerTrackIcon()}
+          {this.renderNextIcon()}
+          {this.renderSkipforwardIcon()}
+          {this.renderRepeatIcon()}
+        </View>
+      </View>
+    </View>)
   }
 
   renderRadioMini() {
@@ -281,11 +316,14 @@ class AudioControls extends Component {
             bottom: 20,
             left: 50,
             right: 50
-          }}    onPress={() => {
-               this.setModalVisible(!this.state.modalVisible);
-             }} style={styles.buttonLeft}>
-          <Image source={require('../../../src/images/icon_arrow_down.png')}/>
+          }}
+          style={styles.buttonLeft}
+          onPress={() => {
+            this.setModalVisible(!this.state.modalVisible);
+          }}>
+              <Image source={require('../../../src/images/icon_arrow_down.png')}/>
         </TouchableOpacity>
+
       </View>
       <View style={styles.container}>
         <TouchableOpacity activeOpacity={0.8} hitSlop={{
@@ -318,14 +356,20 @@ class AudioControls extends Component {
                         {currentTime ? moment(currentTime * 1000).format('mm:ss') : '00:00'}
                   </Text> */
           }
-          <Slider value={currentTime} maximumValue={duration} style={styles.playbackBar} minimumTrackTintColor={this.props.sliderMinimumTrackTintColor || this.props.activeColor} maximumTrackTintColor={this.props.sliderMaximumTrackTintColor || this.props.inactiveColor} thumbTintColor={this.props.sliderThumbTintColor || this.props.activeColor} thumbImage={require('../../../src/images/icon_volume.png')} onSlidingComplete={seconds => {
+          <Slider value={currentTime} maximumValue={duration}
+            style={styles.playbackBar}
+            minimumTrackTintColor={this.props.sliderMinimumTrackTintColor || this.props.activeColor}
+             maximumTrackTintColor={this.props.sliderMaximumTrackTintColor || this.props.inactiveColor}
+             thumbTintColor={this.props.sliderThumbTintColor || this.props.activeColor}
+             onSlidingComplete={seconds => {
               AudioController.seek(seconds);
               if (seconds < duration)
                 AudioController.play();
-              }} onValueChange={() => AudioController.clearCurrentTimeListener()}/> {/* <Text numberOfLines={1} style={this.props.sliderTimeStyle}>
+              }} onValueChange={() => AudioController.clearCurrentTimeListener()}/>
+              {/* <Text numberOfLines={1} style={this.props.sliderTimeStyle}>
                         {duration ? moment(duration * 1000).format('mm:ss') : '00:00'}
                   </Text> */
-          }
+              }
         </View>
         <View style={styles.buttonGroup}>
           <TouchableOpacity activeOpacity={0.8}><Image source={require('../../../src/images/icon_video.png')}/></TouchableOpacity>
@@ -340,28 +384,29 @@ class AudioControls extends Component {
   render() {
     const {currentTime, duration, currentAudio} = this.state;
     return (<View style={styles.flex}>
-      {/* {this.renderRadio()} */}
-      {/* {this.renderRadioMini()} */}
-       <Modal
-         animationType="slide"
-         transparent={false}
-         visible={false}
-         onRequestClose={() => {
-           alert('Modal has been closed.');
-         }}>
-               {this.renderRadio()}
-       </Modal>
+      {this.renderTrack()}
+      {/* <View style={styles.radioStyle}>
+        <TouchableOpacity
+          onPress={() => {
+            this.setModalVisible(true);
+          }}>
+        {this.renderRadioMini()}
+      </TouchableOpacity>
+      </View> */}
 
-       <TouchableOpacity
-         onPress={() => {
-           this.setModalVisible(true);
-         }}>
-           {this.renderRadioMini()}
-       </TouchableOpacity>
-
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            alert('Modal has been closed.');
+          }}>
+          <View style={{height: height-64}}>
+            {this.renderRadio()}
+          </View>
+        </Modal>
     </View>);
   }
 }
 
 export default AudioControls;
-
