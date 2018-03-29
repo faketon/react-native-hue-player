@@ -7,6 +7,10 @@ export default StyleSheet.create({
   flex: {
     flex: 1
   },
+  center: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   container: {
     flex: 1,
     flexDirection: 'column',
@@ -19,8 +23,6 @@ export default StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     height: 72,
-    position: 'absolute',
-    bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.6)',
     paddingLeft: 10,
     paddingRight: 10
@@ -52,7 +54,9 @@ export default StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
-    alignItems: 'center'
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%'
   },
   playbackBar: {
     flex: 1
@@ -70,10 +74,15 @@ export default StyleSheet.create({
     height: 20,
     margin: 5
   },
+  controlExtraButton:{
+    margin: 20
+  },
   buttonLeft: {
-    position: 'absolute',
-    top: 20,
-    left: 20
+    // position: 'absolute',
+    // top: 20,
+    // left: 20,
+    marginLeft: 20,
+    zIndex: 1
   },
   buttonLive: {
     marginBottom: 20
@@ -101,5 +110,11 @@ export default StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 48 / 2
+  },
+  radioStyle: {
+    flex: 1,
+    width: '100%',
+    position: 'absolute',
+    bottom: 0
   }
 });
