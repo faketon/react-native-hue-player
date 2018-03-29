@@ -21,13 +21,9 @@ class AudioControls extends Component {
     static defaultProps = {
         ...Component.defaultProps,
 
-        //COLORS
-        activeColor: colors.green,
-        inactiveColor: '#888',
-
-        //FORWARD
-        hasButtonForForward: false,
-        timeForFoward: 15,
+        //SKIP SECONDS
+        hasButtonSkipSeconds: false,
+        timeToSkip: 15,
 
         //THUMBNAIL
         thumbnailSize: {
@@ -37,21 +33,31 @@ class AudioControls extends Component {
 
         //SOUND
         titleStyle: {
-            fontSize: 16
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: colors.white
         },
         authorStyle: {
-            fontSize: 14
+            fontSize: 16,
+            color: colors.white
         },
 
+        //COLORS
+        activeColor: colors.white,
+        inactiveColor: colors.grey,
+
         //BUTTONS
-        activeButtonColor: this.activeColor,
-        inactiveButtonColor: this.inactiveColor,
+        activeButtonColor: null,
+        inactiveButtonColor: null,
 
         //SLIDER
-        sliderMinimumTrackTintColor: this.activeColor,
-        sliderMaximumTrackTintColor: this.activeColor,
-        sliderThumbTintColor: this.activeColor,
-        sliderTimeStyle: { fontSize: 18 }
+        sliderMinimumTrackTintColor: null,
+        sliderMaximumTrackTintColor: null,
+        sliderThumbTintColor: null,
+        sliderTimeStyle: {
+            fontSize: 18,
+            color: colors.white
+        }
     }
 
     constructor(props) {
@@ -109,7 +115,10 @@ class AudioControls extends Component {
                 >
                     <Image
                         source={images.iconPause}
-                        style={[styles.playButton, { tintColor: this.props.activeButtonColor }]}
+                        style={[
+                            styles.playButton,
+                            { tintColor: this.props.activeButtonColor || this.props.activeColor }
+                        ]}
                     />
                 </TouchableOpacity >
             );
@@ -121,7 +130,10 @@ class AudioControls extends Component {
             >
                 <Image
                     source={images.iconPlay}
-                    style={[styles.playButton, { tintColor: this.props.activeButtonColor }]}
+                    style={[
+                        styles.playButton,
+                        { tintColor: this.props.activeButtonColor || this.props.activeColor }
+                    ]}
                 />
             </TouchableOpacity >
         );
@@ -133,7 +145,10 @@ class AudioControls extends Component {
                 <TouchableOpacity onPress={() => AudioController.playNext()}>
                     <Image
                         source={images.iconNext}
-                        style={[styles.controlButton, { tintColor: this.props.activeButtonColor }]}
+                        style={[
+                            styles.controlButton,
+                            { tintColor: this.props.activeButtonColor || this.props.activeColor }
+                        ]}
                     />
                 </TouchableOpacity>
             );
@@ -141,7 +156,10 @@ class AudioControls extends Component {
         return (
             <Image
                 source={images.iconNext}
-                style={[styles.controlButton, { tintColor: this.props.inactiveButtonColor }]}
+                style={[
+                    styles.controlButton,
+                    { tintColor: this.props.inactiveButtonColor || this.props.inactiveColor }
+                ]}
             />
         );
     }
@@ -152,7 +170,10 @@ class AudioControls extends Component {
                 <TouchableOpacity onPress={() => AudioController.playPrevious()}>
                     <Image
                         source={images.iconPrevious}
-                        style={[styles.controlButton, { tintColor: this.props.activeButtonColor }]}
+                        style={
+                            [styles.controlButton,
+                            { tintColor: this.props.activeButtonColor || this.props.activeColor }
+                            ]}
                     />
                 </TouchableOpacity>
             );
@@ -160,53 +181,72 @@ class AudioControls extends Component {
         return (
             <Image
                 source={images.iconPrevious}
-                style={[styles.controlButton, { tintColor: this.props.inactiveButtonColor }]}
+                style={[
+                    styles.controlButton,
+                    { tintColor: this.props.inactiveButtonColor || this.props.inactiveColor }
+                ]}
             />
         );
     }
 
     renderSkipbackwardIcon() {
-        if (!this.props.hasButtonForForward) return;
+        if (!this.props.hasButtonSkipSeconds) return;
         return (
             <TouchableOpacity
                 onPress={() => {
-                    AudioController.seekToForward(-this.props.timeForFoward);
+                    AudioController.seekToForward(-this.props.timeToSkip);
                 }}
             >
                 <Image
                     source={images.skipBackward}
-                    style={[styles.controlButton, { tintColor: this.props.activeButtonColor }]}
+                    style={[
+                        styles.controlButton,
+                        { tintColor: this.props.activeButtonColor || this.props.activeColor }
+                    ]}
                 />
             </TouchableOpacity>
         );
     }
 
     renderSkipforwardIcon() {
-        if (!this.props.hasButtonForForward) return;
+        if (!this.props.hasButtonSkipSeconds) return;
         return (
             <TouchableOpacity
                 onPress={() => {
-                    AudioController.seekToForward(this.props.timeForFoward);
+                    AudioController.seekToForward(this.props.timeToSkip);
                 }}
             >
                 <Image
                     source={images.skipForward}
-                    style={[styles.controlButton, { tintColor: this.props.activeButtonColor }]}
+                    style={[
+                        styles.controlButton,
+                        {
+                            tintColor: this.props.activeButtonColor
+                                || this.props.activeColor
+                        }]}
                 />
             </TouchableOpacity>
         );
     }
 
     render() {
-        const { currentTime, duration } = this.state;
+        const { currentTime, duration, currentAudio } = this.state;
+
+        const thumbnailSource = currentAudio.thumbnailUri ?
+            { uri: currentAudio.thumbnailUri } : currentAudio.thumbnailLocal;
+
+        console.log('Music', currentAudio);
+
         return (
             <View style={styles.container}>
                 <Image
-                    source={{ uri: this.state.currentAudio.thumbnail }}
+                    source={thumbnailSource}
                     style={this.props.thumbnailSize}
                 />
-                <Text style={this.props.titleStyle}>{this.state.currentAudio.title}</Text>
-                <Text style={this.props.authorStyle}>{this.state.currentAudio.author}</Text>
+                <View style={styles.detailContainer}>
+                    <Text style={this.props.titleStyle}>{currentAudio.title}</Text>
+                    <Text style={this.props.authorStyle}>{currentAudio.author}</Text>
+                </View>
                 <View style={styles.playbackContainer}>
                     <Text numberOfLines={1} style={this.props.sliderTimeStyle}>
                         {currentTime ? moment(currentTime * 1000).format('mm:ss') : '00:00'}
@@ -217,14 +257,17 @@ class AudioControls extends Component {
 
                         style={styles.playbackBar}
 
-                        minimumTrackTintColor={this.props.sliderMinimumTrackTintColor}
-                        maximumTrackTintColor={this.props.sliderMaximumTrackTintColor}
-                        thumbTintColor={this.props.sliderThumbTintColor}
+                        minimumTrackTintColor={this.props.sliderMinimumTrackTintColor ||
+                            this.props.activeColor}
+                        maximumTrackTintColor={this.props.sliderMaximumTrackTintColor ||
+                            this.props.inactiveColor}
+                        thumbTintColor={this.props.sliderThumbTintColor || this.props.activeColor}
 
                         onSlidingComplete={seconds => {
                             AudioController.seek(seconds);
                             if (seconds < duration) AudioController.play();
                         }}
+
                         onValueChange={() => AudioController.clearCurrentTimeListener()}
                     />
                     <Text numberOfLines={1} style={this.props.sliderTimeStyle}>
@@ -249,6 +292,13 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    detailContainer: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 15,
+        marginVertical: 10
     },
     playbackContainer: {
         flexDirection: 'row'

@@ -6,51 +6,42 @@ import {
 
 import AudioControls from './components/AudioControls';
 
+
+import images from './config/images';
+
 const playlist = [
   {
-    key: 'audio1',
+    key: 'audio01',
     title: 'Hino do Brasil',
     author: 'Francisco Manuel da Silva',
     url: 'http://www.noiseaddicts.com/samples_1w72b820/4170.mp3',
-    thumbnail: 'http://www.aprocura.com.br/wp-content/uploads/2012/10/Significado-Cores-Bandeira-do-Brasil.jpg'
+    thumbnailUri: 'http://www.aprocura.com.br/wp-content/uploads/2012/10/Significado-Cores-Bandeira-do-Brasil.jpg'
   },
   {
-    key: 'audio2',
+    key: 'audio02',
     title: 'Sweet Dreams - Eurythmics (Funk Remix)',
     author: 'Senhor Sider',
     url: '',
     path: 'audio1.mp3',
-    thumbnail: 'https://lh3.googleusercontent.com/-SE7FQ1XW4ng/WTSYWArxKoI/AAAAAAAAA84/dan-oI2dryohk6fjm7NPShG5QAy03H17QCLcB/s600/Sweet-Dreams---%2528SENHOR-SIDER-FUNK-REMIX%2529-capa.jpg1200x630bb.jpg'
+    thumbnailLocal: images.thumbnail
   }
 ];
 
 export default class App extends Component {
   render() {
+    console.log('playlist', playlist);
+
     return (
       <View style={styles.container}>
         <AudioControls
           initialTrack={0}
           playlist={playlist}
 
-          //Thumbnail
-          thumbnailSize={{ width: 200, height: 200 }}
+          activeColor={'#fdfa04'}
+          inactiveColor={'#fdfab1'}
 
-          //Buttons
-          activeButtonColor={'white'}
-          inactiveButtonColor={'#888'}
-
-          //Slider
-          sliderMinimumTrackTintColor={'#888'}
-          sliderMaximumTrackTintColor={'white'}
-          sliderThumbTintColor={'white'}
-          sliderTimeStyle={{ fontSize: 18, color: 'white' }}
-
-          //Title and author
-          titleStyle={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}
-          authorStyle={{ fontSize: 16, color: 'white' }}
-
-          hasButtonForForward
-          timeForFoward={30}
+          hasButtonSkipSeconds
+          timeToSkip={30}
         />
       </View>
     );
