@@ -11,12 +11,21 @@ import {
   Dimensions,
   Modal
 } from 'react-native';
+import {
+  Header,
+  Button,
+  Left,
+  Right,
+  Body,
+  Title
+} from 'native-base';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 
 import images from '../config/images';
 import colors from '../config/colors';
 import AudioController from '../AudioController';
+import Video from 'react-native-video';
 import styles from './styles/AudioControls.style';
 
 const {width, height} = Dimensions.get('window');
@@ -127,7 +136,7 @@ class AudioControls extends Component {
               tintColor: this.props.activeButtonColor || this.props.activeColor
             }
           ]}/>
-      </TouchableOpacity >);
+      </TouchableOpacity>);
     }
 
     return (<TouchableOpacity onPress={() => AudioController.play()}>
@@ -136,7 +145,7 @@ class AudioControls extends Component {
             tintColor: this.props.activeButtonColor || this.props.activeColor
           }
         ]}/>
-    </TouchableOpacity >);
+    </TouchableOpacity>);
   }
 
   renderPlayerTrackIcon() {
@@ -144,12 +153,12 @@ class AudioControls extends Component {
     if (isPlaying) {
       return (<TouchableOpacity onPress={() => AudioController.pause()}>
         <Image source={require('../../../src/images/icon_play_at.png')}/>
-      </TouchableOpacity >);
+      </TouchableOpacity>);
     }
 
     return (<TouchableOpacity onPress={() => AudioController.play()}>
       <Image source={require('../../../src/images/icon_play.png')}/>
-    </TouchableOpacity >);
+    </TouchableOpacity>);
   }
 
   renderPlayerIcon() {
@@ -231,6 +240,28 @@ class AudioControls extends Component {
     </TouchableOpacity>)
   }
 
+  renderVideo(){
+    return(<View style={styles.videoContainer}>
+      <Video source={{uri: 'http://www.podcastgenerator.net/demoV2/pg/media/2016-08-13_video3dprinters.mp4'}}   // Can be a URL or a local file.
+           ref={(ref) => {
+             this.player = ref
+           }}                                      // Store reference
+           rate={1.0}                              // 0 is paused, 1 is normal.
+           volume={1.0}                            // 0 is muted, 1 is normal.
+           muted={false}                           // Mutes the audio entirely.
+           paused={false}                          // Pauses playback entirely.
+           resizeMode="cover"                      // Fill the whole screen at aspect ratio.*
+           repeat={true}                           // Repeat forever.
+           playInBackground={false}                // Audio continues to play when app entering background.
+           playWhenInactive={false}                // [iOS] Video continues to play when control or notification center are shown.
+           ignoreSilentSwitch={"ignore"}           // [iOS] ignore | obey - When 'ignore', audio will still play with the iOS hard silent switch set to silent. When 'obey', audio will toggle with the switch. When not specified, will inherit audio settings as usual.
+           progressUpdateInterval={250.0}          // [iOS] Interval to fire onProgress (default to ~250ms)
+           style={styles.videoStyle}/>
+    </View>
+
+    )
+  }
+
   renderTrack() {
     const {currentTime, duration, currentAudio} = this.state;
     return (<View>
@@ -263,54 +294,54 @@ class AudioControls extends Component {
   renderRadioMini() {
     const {currentTime, duration, currentAudio} = this.state;
     return ( <View style={styles.containerResize}>
-      <View style={{flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
-      <TouchableOpacity activeOpacity={0.8} hitSlop={{
-          top: 20,
-          bottom: 20,
-          left: 50,
-          right: 50
-        }}
-        onPress={() => {
-          this.setModalVisible(!this.state.modalVisible);
-        }}>
-            <Image source={require('../../../src/images/icon_arrow_up.png')}/>
-      </TouchableOpacity>
-
-        <Image source={currentAudio.thumbnailUri
-            ? {
-              uri: currentAudio.thumbnailUri
-            }
-            : currentAudio.thumbnailLocal} style={{width: 48, height: 48, borderRadius: 48/2}}/>
-          </View>
-            <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center', paddingTop: 30,  paddingLeft: 20, paddingRight: 20, paddingBottom: 20}}>
-              <Text style={styles.titleStyleResize}>{currentAudio.title}</Text>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text numberOfLines={1} style={styles.contentStyle}>14.00-17.00 / Thu-Fri</Text>
-                <TouchableOpacity activeOpacity={0.8} hitSlop={{
-                    top: 20,
-                    bottom: 20,
-                    left: 50,
-                    right: 50
-                  }} style={styles.buttonLiveResize}>
-                  <Image source={require('../../../src/images/icon_live.png')}/>
-                </TouchableOpacity>
-              </View>
+        <View style={styles.detailLeft}>
+          <TouchableOpacity activeOpacity={0.8} hitSlop={{
+              top: 20,
+              bottom: 20,
+              left: 50,
+              right: 50
+            }}
+            onPress={() => {
+              this.setModalVisible(!this.state.modalVisible);
+            }}>
+                <Image source={require('../../../src/images/icon_arrow_up.png')}/>
+          </TouchableOpacity>
+          <Image source={currentAudio.thumbnailUri
+              ? {
+                uri: currentAudio.thumbnailUri
+              }
+              : currentAudio.thumbnailLocal} style={{width: 48, height: 48, borderRadius: 48/2}}/>
+        </View>
+        <View style={styles.detailCenter}>
+          <Text style={styles.titleStyleResize}>{currentAudio.title}</Text>
+            <View style={styles.detailCenterSub}>
+              <Text numberOfLines={1} style={styles.contentStyle}>14.00-17.00 / Thu-Fri</Text>
+              <TouchableOpacity activeOpacity={0.8} hitSlop={{
+                  top: 20,
+                  bottom: 20,
+                  left: 50,
+                  right: 50
+                }} style={styles.buttonLiveResize}>
+                <Image source={require('../../../src/images/icon_live.png')}/>
+              </TouchableOpacity>
             </View>
-            <View style={styles.buttonsContainer}>
-              {this.renderSkipbackwardIcon()}
-              {/* {this.renderPreviousIcon()} */}
-              {this.renderPlayerIconResize()}
-              {/* {this.renderNextIcon()} */}
-              {this.renderSkipforwardIcon()}
-            </View>
+        </View>
+        <View style={styles.center}>
+          {this.renderSkipbackwardIcon()}
+          {/* {this.renderPreviousIcon()} */}
+          {this.renderPlayerIconResize()}
+          {/* {this.renderNextIcon()} */}
+          {this.renderSkipforwardIcon()}
+        </View>
       </View>
+
     )
   }
 
   renderRadio() {
     const {currentTime, duration, currentAudio} = this.state;
     return (<ImageBackground source={require('../../../src/images/bg.png')} style={styles.backgroundImage}>
-      <View style={styles.navigation}>
+      {/* <View style={styles.navigation}>
         <TouchableOpacity activeOpacity={0.8} hitSlop={{
             top: 20,
             bottom: 20,
@@ -324,7 +355,23 @@ class AudioControls extends Component {
               <Image source={require('../../../src/images/icon_arrow_down.png')}/>
         </TouchableOpacity>
 
-      </View>
+      </View> */}
+
+      <Header style={styles.header}>
+        <Left style={styles.flex}>
+          <Button style={styles.transparent} onPress={() => {
+              this.setModalVisible(!this.state.modalVisible);
+            }}>
+            <Image source={require('../../../src/images/icon_arrow_down.png')}/>
+          </Button>
+        </Left>
+        <Body style={styles.navigationTitle}>
+          <Title style={styles.title}></Title>
+        </Body>
+        <Right style={styles.flex}>
+        </Right>
+      </Header>
+
       <View style={styles.container}>
         <TouchableOpacity activeOpacity={0.8} hitSlop={{
             top: 20,
@@ -339,6 +386,9 @@ class AudioControls extends Component {
               uri: currentAudio.thumbnailUri
             }
             : currentAudio.thumbnailLocal} style={this.props.thumbnailSize}/>
+        {/* <View style={styles.videoContent}>
+          {this.renderVideo()}
+        </View> */}
         <View style={styles.detailContainer}>
           <Text style={this.props.titleStyle}>{currentAudio.title}</Text>
           {/* <Text style={this.props.authorStyle}>{currentAudio.author}</Text> */}
@@ -384,7 +434,8 @@ class AudioControls extends Component {
   render() {
     const {currentTime, duration, currentAudio} = this.state;
     return (<View style={styles.flex}>
-      {this.renderTrack()}
+      {/* {this.renderTrack()} */}
+      {this.renderRadioMini()}
       {/* <View style={styles.radioStyle}>
         <TouchableOpacity
           onPress={() => {
