@@ -454,7 +454,8 @@ class AudioControls extends Component {
               AudioController.seek(seconds);
               if (seconds < duration)
                 AudioController.play();
-              }} onValueChange={() => AudioController.clearCurrentTimeListener()}/> {/* <Text numberOfLines={1} style={this.props.sliderTimeStyle}>
+              }} onValueChange={() => AudioController.clearCurrentTimeListener()}/>
+               {/* <Text numberOfLines={1} style={this.props.sliderTimeStyle}>
                         {duration ? moment(duration * 1000).format('mm:ss') : '00:00'}
                   </Text> */
           }
