@@ -27,6 +27,9 @@ import colors from '../config/colors';
 import AudioController from '../AudioController';
 import Video from 'react-native-video';
 import styles from './styles/AudioControls.style';
+import * as Animatable from 'react-native-animatable';
+import {Actions} from 'react-native-router-flux';
+import {connect} from 'react-redux';
 
 const {width, height} = Dimensions.get('window');
 
@@ -83,6 +86,7 @@ class AudioControls extends Component {
     super(props);
 
     this.state = {
+      typeScene:0,
       modalVisible: false,
       duration: 0,
       currentTime: 0,
@@ -95,6 +99,10 @@ class AudioControls extends Component {
   componentWillMount() {
     const {playlist, initialTrack} = this.props;
     AudioController.init(playlist, initialTrack, this.onChangeStatus, this.updateCurrentTime);
+  }
+
+  onStatusHeader(){
+    return 'hidetop'
   }
 
   onChangeStatus = (status) => {
@@ -293,7 +301,7 @@ class AudioControls extends Component {
 
   renderRadioMini() {
     const {currentTime, duration, currentAudio} = this.state;
-    return ( <View style={styles.containerResize}>
+    return ( <View style={[styles.containerResize]}>
         <View style={styles.detailLeft}>
           <TouchableOpacity activeOpacity={0.8} hitSlop={{
               top: 20,
@@ -302,7 +310,13 @@ class AudioControls extends Component {
               right: 50
             }}
             onPress={() => {
-              this.setModalVisible(!this.state.modalVisible);
+              Actions.refresh({action:{
+                    from:'/player',
+                    to:'/player/',
+                    type:'hideHeader',
+                    refresh:Math.random()
+                }})
+              this.setState({typeScene:1})
             }}>
                 <Image source={require('../../../src/images/icon_arrow_up.png')}/>
           </TouchableOpacity>
@@ -360,7 +374,7 @@ class AudioControls extends Component {
       <Header style={styles.header}>
         <Left style={styles.flex}>
           <Button style={styles.transparent} onPress={() => {
-              this.setModalVisible(!this.state.modalVisible);
+              this.setState({typeScene:0})
             }}>
             <Image source={require('../../../src/images/icon_arrow_down.png')}/>
           </Button>
@@ -381,11 +395,25 @@ class AudioControls extends Component {
           }} style={styles.buttonLive}>
           <Image source={require('../../../src/images/icon_live.png')}/>
         </TouchableOpacity>
-        <Image source={currentAudio.thumbnailUri
-            ? {
-              uri: currentAudio.thumbnailUri
-            }
-            : currentAudio.thumbnailLocal} style={this.props.thumbnailSize}/>
+
+        {
+          this.state.typeScene == 1 ?
+          <View style={this.props.thumbnailSize}>
+            <Image source={currentAudio.thumbnailUri
+                ? {
+                  uri: currentAudio.thumbnailUri
+                }
+                : currentAudio.thumbnailLocal} style={this.props.thumbnailSize}/>
+          </View>
+          :
+          this.state.typeScene == 2 ?
+          <View style={styles.videoContent}>
+            {this.renderVideo()}
+          </View>
+          :
+          <View/>
+
+        }
         {/* <View style={styles.videoContent}>
           {this.renderVideo()}
         </View> */}
@@ -422,7 +450,9 @@ class AudioControls extends Component {
               }
         </View>
         <View style={styles.buttonGroup}>
-          <TouchableOpacity activeOpacity={0.8}><Image source={require('../../../src/images/icon_video.png')}/></TouchableOpacity>
+          <TouchableOpacity activeOpacity={0.8} onPress={()=> this.setState({typeScene:2})}>
+            <Image source={require('../../../src/images/icon_video.png')}/>
+          </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.8}><Image source={require('../../../src/images/icon_speech_bubble.png')}/></TouchableOpacity>
           <TouchableOpacity activeOpacity={0.8}><Image source={require('../../../src/images/icon_heart.png')}/></TouchableOpacity>
           <TouchableOpacity activeOpacity={0.8}><Image source={require('../../../src/images/icon_share.png')}/></TouchableOpacity>
@@ -434,30 +464,27 @@ class AudioControls extends Component {
   render() {
     const {currentTime, duration, currentAudio} = this.state;
     return (<View style={styles.flex}>
+      {/* {this.renderRadio()} */}
       {/* {this.renderTrack()} */}
+      {
+        this.state.typeScene == 1 ?
+        <View style={{flex:1}}>
+          {this.renderRadio()}
+        </View>
+        :
+        <View/>
+      }
       {this.renderRadioMini()}
-      {/* <View style={styles.radioStyle}>
-        <TouchableOpacity
-          onPress={() => {
-            this.setModalVisible(true);
-          }}>
-        {this.renderRadioMini()}
-      </TouchableOpacity>
-      </View> */}
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            alert('Modal has been closed.');
-          }}>
-          <View style={{height: height-64}}>
-            {this.renderRadio()}
-          </View>
-        </Modal>
     </View>);
   }
 }
+const mapStateToProps = state => {
 
-export default AudioControls;
+  return {
+
+  };
+};
+
+export default connect(mapStateToProps, null)(AudioControls);
+
