@@ -86,6 +86,7 @@ class AudioControls extends Component {
     super(props);
 
     this.state = {
+      isVideo:false,
       typeScene:0,
       modalVisible: false,
       duration: 0,
@@ -403,7 +404,7 @@ class AudioControls extends Component {
         </TouchableOpacity>
 
         {
-          this.state.typeScene == 1 ?
+          this.state.isVideo == false ?
           <View style={this.props.thumbnailSize}>
             <Image source={currentAudio.thumbnailUri
                 ? {
@@ -412,7 +413,7 @@ class AudioControls extends Component {
                 : currentAudio.thumbnailLocal} style={this.props.thumbnailSize}/>
           </View>
           :
-          this.state.typeScene == 2 ?
+          this.state.isVideo == true ?
           <View style={styles.videoContent}>
             {this.renderVideo()}
           </View>
@@ -456,7 +457,7 @@ class AudioControls extends Component {
               }
         </View>
         <View style={styles.buttonGroup}>
-          <TouchableOpacity activeOpacity={0.8} onPress={()=> this.setState({typeScene:2})}>
+          <TouchableOpacity activeOpacity={0.8} onPress={()=> this.setState({isVideo:!this.state.isVideo})}>
             <Image source={require('../../../src/images/icon_video.png')}/>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.8}><Image source={require('../../../src/images/icon_speech_bubble.png')}/></TouchableOpacity>
