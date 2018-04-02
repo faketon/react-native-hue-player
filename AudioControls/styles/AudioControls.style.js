@@ -24,17 +24,14 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  containerResize: {
-    flex: 1,
+  playerResize: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     height: 72,
     backgroundColor: 'rgba(0,0,0,0.8)',
     paddingLeft: 10,
-    paddingRight: 10,
-    position: 'absolute',
-    bottom: 0
+    paddingRight: 10
   },
   detailContainer: {
     flexDirection: 'column',
