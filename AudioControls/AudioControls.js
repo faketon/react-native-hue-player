@@ -374,6 +374,12 @@ class AudioControls extends Component {
       <Header style={styles.header}>
         <Left style={styles.flex}>
           <Button style={styles.transparent} onPress={() => {
+            Actions.refresh({action:{
+                  from:'/player',
+                  to:'/player/',
+                  type:'showHeader',
+                  refresh:Math.random()
+              }})
               this.setState({typeScene:0})
             }}>
             <Image source={require('../../../src/images/icon_arrow_down.png')}/>
@@ -472,9 +478,13 @@ class AudioControls extends Component {
           {this.renderRadio()}
         </View>
         :
+        this.state.typeScene == 0 ?
+        <View style={{flex:1}}>
+          {this.renderRadioMini()}
+        </View>
+        :
         <View/>
       }
-      {this.renderRadioMini()}
 
     </View>);
   }
@@ -487,4 +497,3 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, null)(AudioControls);
-
