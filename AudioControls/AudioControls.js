@@ -475,7 +475,7 @@ class AudioControls extends Component {
       {/* {this.renderTrack()} */}
       {
         this.state.typeScene == 1 ?
-        <Animatable.View style={{flex:1}} animation={fadeIn}>
+        <Animatable.View style={{flex:1}} animation="fadeInUpBig">
           {/* <View style={{flex:1}}> */}
             {this.renderRadio()}
           {/* </View> */}
@@ -483,9 +483,9 @@ class AudioControls extends Component {
 
         :
         this.state.typeScene == 0 ?
-        <View style={{flex:1}}>
+        <Animatable.View style={{flex:1}} animation="fadeInUp">
           {this.renderRadioMini()}
-        </View>
+        </Animatable.View>
         :
         <View/>
       }
@@ -493,14 +493,7 @@ class AudioControls extends Component {
     </View>);
   }
 }
-const fadeIn = {
-  from: {
-    translateY: Dimensions.get('window').width,
-  },
-  to: {
-    translateY: 0
-  },
-};
+
 const mapStateToProps = state => {
 
   return {
